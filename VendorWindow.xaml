@@ -1,0 +1,138 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ValidatableBindableBaseDemo"
+        mc:Ignorable="d"
+        x:Class="ValidatableBindableBaseDemo.VendorWindow"
+        Title="Vendor Window"
+        Height="350"
+        Width="525">
+    <Window.Resources>
+        <SolidColorBrush Color="#D4D4D4" x:Key="LineBrush"/>
+        <SolidColorBrush Color="#666666" x:Key="LightTextBrush"/>
+        <SolidColorBrush Color="#444444" x:Key="DarkTextBrush"/>
+        <SolidColorBrush Color="#0072C6" x:Key="BlueTextBrush"/>
+        
+        <Style x:Key="ErrorStyle"
+               TargetType="FrameworkElement">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError"
+                         Value="true">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="BorderBrush" Value="Pink"/>
+                    <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                </Trigger>
+                <!--<Trigger Property="Validation.HasError" Value="false">
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </Trigger>-->
+                
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ElementName=firstNameTextBox, Path=Text}" Value="" />
+                        <Condition Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.HasError)}" Value="true"/>
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter Property="BorderThickness"  Value="3" />
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+
+            </Style.Triggers>
+        </Style>
+        
+    </Window.Resources>
+    <Window.DataContext>
+        <local:VendorWindowViewModel />
+    </Window.DataContext>
+    <Grid>
+        <Grid x:Name="grid1"
+              VerticalAlignment="Top"
+              Margin="23,21,0,0"
+              HorizontalAlignment="Left"
+              Width="400">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label VerticalAlignment="Center"
+                   Grid.Row="0"
+                   Margin="3"
+                   HorizontalAlignment="Left"
+                   Grid.Column="0"
+                   Content="First Name:" />
+            <TextBox x:Name="firstNameTextBox"
+                        Width="309"
+                        VerticalAlignment="Center"
+                        Text="{Binding Vendor.FirstName, Mode=TwoWay, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged}"
+                        Grid.Row="0"
+                        Margin="3.4,4,-185.2,4"
+                        Height="24"
+                        HorizontalAlignment="Left"
+                        Grid.Column="1"
+                        />
+            <Label VerticalAlignment="Center"
+                   Grid.Row="1"
+                   Margin="3"
+                   HorizontalAlignment="Left"
+                   Grid.Column="0"
+                   Content="Last Name:" />
+            <TextBox x:Name="lastNameTextBox"
+                     Width="309"
+                     VerticalAlignment="Center"
+                     Text="{Binding Vendor.LastName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Row="1"
+                     Margin="3.4,4,-183.6,4"
+                     Height="24"
+                     HorizontalAlignment="Left"
+                     Grid.Column="1"
+                     />
+            <Label VerticalAlignment="Center"
+                   Grid.Row="2"
+                   Margin="3"
+                   HorizontalAlignment="Left"
+                   Grid.Column="0"
+                   Content="Phone:" />
+            <TextBox x:Name="phoneTextBox"
+                     Width="309"
+                     VerticalAlignment="Center"
+                     Text="{Binding Vendor.Phone, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Row="2"
+                     Margin="3.4,4,-182.8,4"
+                     Height="24"
+                     HorizontalAlignment="Left"
+                     Grid.Column="1"
+                     />
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}"
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Width="75"
+                     />
+            <ItemsControl ItemsSource="{Binding Errors}"
+                          Grid.Row="4"
+                          Grid.ColumnSpan="2"
+                          TextBlock.Foreground="Red" />
+        </Grid>
+
+    </Grid>
+</Window>

@@ -1,0 +1,376 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+                    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+                    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:conv="clr-namespace:Apollo.Infrastructure.Converters">
+
+    <!--COLORS-->
+    <SolidColorBrush x:Key="ProductNotAllowToOrderColor">Salmon</SolidColorBrush>
+    <SolidColorBrush x:Key="EditorHighlightColor">#FAFFBD</SolidColorBrush>
+    <SolidColorBrush x:Key="HighlightTextColor">#BE0032</SolidColorBrush>
+
+    <conv:BooleanNotConverter x:Key="BooleanNotConverter"/>
+    <conv:TargetNullValueConverter x:Key="TargetNullValueConverter"/>
+
+    <Style TargetType="{x:Type dxr:RibbonControl}">
+        <Setter Property="DockPanel.Dock" Value="Top"/>
+        <Setter Property="ShowApplicationButton" Value="False"/>
+        <Setter Property="ToolbarShowMode"  Value="Hide"/>
+    </Style>
+
+    <Style x:Key="ReadOnlyNumberCodeColumn" TargetType="{x:Type dxg:GridColumn}">
+        <Setter Property="EditSettings">
+            <Setter.Value>
+                <dxe:TextEditSettings Mask="##########" MaskUseAsDisplayFormat="True" MaskType="Numeric" HorizontalContentAlignment="Left" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Header" Value="Code"/>
+        <Setter Property="Width" Value="90"/>
+        <Setter Property="AllowResizing" Value="False"/>
+        <Setter Property="AllowEditing" Value="False"/>
+    </Style>
+
+    <Style x:Key="TextEditNotes" TargetType="{x:Type dxe:TextEdit}">
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+        <Setter Property="MaxLength" Value="8000"/>
+        <Setter Property="AcceptsReturn" Value="True"/>
+    </Style>
+
+    <Style TargetType="dx:SimpleButton">
+        <Setter Property="MinHeight" Value="28"/>
+    </Style>
+
+    <Style x:Key="SimpleLinkButton" TargetType="dx:SimpleButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="dx:SimpleButton">
+                    <TextBlock TextDecorations="Underline" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="Blue" />
+        <Setter Property="MinHeight" Value="8"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Opacity" Value="0.75" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="ToolTip" Value="{Binding ToolTip, RelativeSource={RelativeSource Self}, TargetNullValue='Open Link'}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--
+    <dxe:TextEdit HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                          ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                                          TextWrapping="WrapWithOverflow" VerticalContentAlignment="Top"
+                                          Text="{Binding ActiveDocument.Notes, UpdateSourceTrigger=PropertyChanged}"
+                                          MaxLength="8000"
+                                          AcceptsReturn="True"
+                                          IsEnabled="{Binding CanEdit}"/>
+    -->
+
+    <Style x:Key="EditableNumberCodeColumn" TargetType="{x:Type dxg:GridColumn}" BasedOn="{StaticResource ResourceKey=ReadOnlyCodeColumn}">
+        <Setter Property="AllowEditing" Value="True"/>
+    </Style>
+
+    <!--<ControlTemplate x:Key="ErrorTemplate">
+        <Grid>
+            <AdornedElementPlaceholder x:Name="valAdorner" VerticalAlignment="Center">
+                <Border BorderBrush="Red" BorderThickness="1" />
+            </AdornedElementPlaceholder>
+        </Grid>
+    </ControlTemplate>-->
+
+    <dxe:TextEditSettings x:Key="CenteredCellContent" HorizontalContentAlignment="Center"/>
+
+    <Style x:Key="ContainerGrid" TargetType="Grid">
+        <Setter Property="Margin" Value="15"/>
+    </Style>
+
+    <Style x:Key="EditableRow" TargetType="{x:Type dxg:RowControl}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Row.IsDirty}" Value="True">
+                <Setter Property="FontWeight" Value="Bold"/>
+            </DataTrigger>
+            <!--<DataTrigger Binding="{Binding Path=Row.IsDeletedState, Mode=OneWay}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>-->
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="DocumentProductRow" TargetType="{x:Type dxg:RowControl}" BasedOn="{StaticResource EditableRow}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Row.ProductAllowToOrder, Converter={StaticResource BooleanNotConverter}}" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ProductNotAllowToOrderColor}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- LookUpEdit -->
+    
+    <ControlTemplate x:Key="NamePopupContentTemplate">
+        <dxg:GridControl x:Name="PART_GridControl">
+            <dxg:GridControl.View>
+                <dxg:TableView NavigationStyle="Row" 
+                               NewItemRowPosition="None" 
+                               AllowEditing="False" 
+                               IsSynchronizedWithCurrentItem="True" 
+                               ShowGroupPanel="False"
+                               AutoWidth="True">
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Name" />
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+    </ControlTemplate>
+    
+    <ControlTemplate x:Key="CodeNamePopupContentTemplate">
+        <dxg:GridControl x:Name="PART_GridControl">
+            <dxg:GridControl.View>
+                <dxg:TableView NavigationStyle="Row" 
+                               NewItemRowPosition="None" 
+                               AllowEditing="False" 
+                               IsSynchronizedWithCurrentItem="True" 
+                               ShowGroupPanel="False"
+                               AutoWidth="True">
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Code" 
+                                SortIndex="0" 
+                                Width="80"
+                                FixedWidth="True"
+                                AllowResizing="False" 
+                                HorizontalHeaderContentAlignment="Left">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings HorizontalContentAlignment="Left"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="Name" Width="*" />
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="GroupedCodeNamePopupContentTemplate">
+        <dxg:GridControl AutoExpandAllGroups="True" x:Name="PART_GridControl">
+            <dxg:GridControl.View>
+                <dxg:TableView NavigationStyle="Row" 
+                               NewItemRowPosition="None" 
+                               AllowEditing="False" 
+                               IsSynchronizedWithCurrentItem="True" 
+                               ShowGroupPanel="False"
+                               AutoWidth="True">
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Code" SortIndex="0" Width="80" AllowResizing="False" HorizontalHeaderContentAlignment="Center" FixedWidth="True">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:FontEditSettings HorizontalContentAlignment="Center"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="Name" />
+                <dxg:GridColumn FieldName="GroupName" GroupIndex="0" Header=":" />
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+    </ControlTemplate>
+
+    <Style x:Key="NameLookUpEdit" TargetType="{x:Type dxg:LookUpEdit}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <dx:BackgroundPanel>
+                                <TextBlock Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TargetNullValueConverter}, ConverterParameter='-'}"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                            </dx:BackgroundPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+        <Setter Property="PopupContentTemplate" Value="{StaticResource NamePopupContentTemplate}"/>
+        <Setter Property="ImmediatePopup" Value="True"/>
+        <Setter Property="AutoPopulateColumns" Value="False"/>
+        <Setter Property="IsPopupAutoWidth" Value="True"/>
+        <Setter Property="IsTextEditable" Value="False"/>
+        <Setter Property="ValueMember" Value="Id"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="StyleSettings">
+            <Setter.Value>
+                <dxg:SearchLookUpEditStyleSettings />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CodeNameLookUpEdit" TargetType="{x:Type dxg:LookUpEdit}" BasedOn="{StaticResource NameLookUpEdit}">
+        <Setter Property="PopupContentTemplate" Value="{StaticResource CodeNamePopupContentTemplate}"/>
+    </Style>
+
+    <Style x:Key="GroupedCodeNameLookUpEdit" BasedOn="{StaticResource NameLookUpEdit}" TargetType="{x:Type dxg:LookUpEdit}">
+        <Setter Property="PopupContentTemplate" Value="{StaticResource GroupedCodeNamePopupContentTemplate}"/>
+    </Style>
+
+    <Style TargetType="{x:Type dxg:LookUpEdit}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip"
+                        Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <!-- LookUpEdit -->
+
+    <Style x:Key="Label" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,0,7,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="LabelControl" TargetType="TextBlock" BasedOn="{StaticResource Label}">
+        <Setter Property="TextAlignment" Value="Right"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <Style TargetType="{x:Type dxe:TextEdit}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip"
+                        Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+        <!--<Setter Property="ShowError" Value="False"/>-->
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+        <!--<Setter Property="HorizontalAlignment" Value="Left" />-->
+    </Style>
+
+    <Style TargetType="{x:Type dxg:GridControl}">
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+    </Style>
+
+    <Style TargetType="{x:Type dxg:TableView}">
+        <Setter Property="ShowValidationAttributeErrors" Value="False"/>
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+    </Style>
+
+    <Style TargetType="{x:Type dxe:TextEditSettings}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+    </Style>
+
+    <!--<Style TargetType="{x:Type dxg:LookUpEditSettings}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+        
+    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>-->
+
+    <ControlTemplate x:Key="LookUpEdit_CodeNamePopupContentTemplate">
+        <dxg:GridControl x:Name="PART_GridControl">
+            <dxg:GridControl.View>
+                <dxg:TableView NavigationStyle="Row" AllowEditing="False" ShowGroupPanel="False">
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Code" Width="90" AllowResizing="False"/>
+                <dxg:GridColumn FieldName="Name" Width="250" />
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="LookUpEdit_CodeNameDisplayTemplate">
+        <TextBlock>
+            <Run Text="{Binding Path=Code}"/> 
+            <Run Text=": "/>                    
+            <Run Text="{Binding Path=Name}"/>
+        </TextBlock>
+    </ControlTemplate>
+
+    <Style TargetType="{x:Type dxe:ComboBoxEditSettings}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+    </Style>
+
+    <Style TargetType="{x:Type dxe:PasswordBoxEdit}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+        <!--<Setter Property="ShowError" Value="False"/>-->
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Width"  Value="90"/>
+    </Style>
+
+    <!--<Style TargetType="{x:Type TextBox}">
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent }" />
+            </Trigger>
+        </Style.Triggers>    
+    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Width"  Value="90"/>
+    </Style>-->
+
+    <Style TargetType="{x:Type dxe:DateEdit }">
+        <Setter Property="Width" Value="85" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <!--<Setter Property="ShowError" Value="False"/>-->
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+    </Style>
+
+    <Style TargetType="{x:Type Slider}">
+        <Setter Property = "IsSnapToTickEnabled" Value ="True"/>
+        <Setter Property = "TickPlacement" Value ="BottomRight"/>
+        <Setter Property = "TickFrequency" Value ="5"/>
+        <Setter Property="Maximum" Value="100" />
+    </Style>
+
+    <Style TargetType="{x:Type dxe:ComboBoxEdit}" >
+        <Setter Property="Margin" Value="3" />
+        <!--<Setter Property="ShowError" Value="False"/>-->
+        <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>-->
+
+    </Style>
+
+    <Style TargetType="{x:Type dxe:SpinEdit}" >
+        <Setter Property="Margin" Value="3" />
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Trigger>
+        </Style.Triggers>
+
+    </Style>
+    
+</ResourceDictionary>

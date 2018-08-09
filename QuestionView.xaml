@@ -1,0 +1,291 @@
+﻿<inf:ViewBase x:Class="Apollo.Survey.Views.QuestionView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:presentation="clr-namespace:Apollo.Infrastructure.Presentation;assembly=Apollo.Infrastructure"
+              xmlns:infPrism="clr-namespace:Apollo.Infrastructure.Prism;assembly=Apollo.Infrastructure"
+              xmlns:inf="clr-namespace:Apollo.Infrastructure;assembly=Apollo.Infrastructure"
+              xmlns:domain="clr-namespace:Apollo.Survey.Core;assembly=Apollo.Survey.Core"
+              mc:Ignorable="d" 
+              d:DesignHeight="500">
+
+	<inf:ViewBase.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/Apollo.Infrastructure;component/Themes/Generic.xaml"/>
+			</ResourceDictionary.MergedDictionaries>            
+			<presentation:FlagEnumConverter x:Key="FlagEnumConverter" />
+			<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>            
+		</ResourceDictionary>
+	</inf:ViewBase.Resources>
+
+	<dx:LoadingDecorator IsSplashScreenShown="{Binding Processing}" OwnerLock="LoadingContent" SplashScreenLocation="CenterContainer">
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<dxb:BarContainerControl Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" ContainerType="Top" >
+				<dxb:ToolBarControl AllowQuickCustomization="False">
+					<dxb:BarButtonItem x:Name="NewButton" Content="New" 
+						   Command="{Binding NewCommand}"
+						   LargeGlyph="{dx:DXImage Image=Add_32x32.png}"                           
+						   Glyph="{dx:DXImage Image=Add_16x16.png}"/>
+					<dxb:BarButtonItem x:Name="DeleteButton" Content="Delete"  
+						   Command="{Binding DeleteCommand}"
+						   LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"                           
+						   Glyph="{dx:DXImage Image=Delete_16x16.png}"/>
+					<dxb:BarButtonItem x:Name="SaveButton" Content="Save" 
+						   Command="{Binding SaveCommand}"
+						   LargeGlyph="{dx:DXImage Image=Save_32x32.png}"                           
+						   Glyph="{dx:DXImage Image=Save_16x16.png}"/>
+					<dxb:BarItemSeparator/>
+					<dxb:BarButtonItem x:Name="ReloadButton" Content="Reload"  
+						   Command="{Binding ReloadCommand}"
+						   LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"                           
+						   Glyph="{dx:DXImage Image=Refresh_16x16.png}"/>
+					<dxb:BarButtonItem Content="Close Document"  
+						Command="{Binding CloseCommand}"
+						LargeGlyph="{dx:DXImage Image=Clear_32x32.png}"
+						Glyph="{dx:DXImage Image=Clear_16x16.png}"
+						ToolTip="Close Document"/>
+					<dxb:BarItemSeparator/>
+				</dxb:ToolBarControl>
+				<dxb:ToolBarControl AllowQuickCustomization="False" >
+					<dxb:BarButtonItem Content="First"
+						Command="{Binding FirstPageCommand}"
+						Glyph="{dx:DXImage Image=First_16x16.png}"
+						LargeGlyph="{dx:DXImage Image=First_32x32.png}"
+						CategoryName="Page"/>
+					<dxb:BarButtonItem Content="Previous"
+						Command="{Binding PreviousPageCommand}"
+						Glyph="{dx:DXImage Image=Prev_16x16.png}"
+						LargeGlyph="{dx:DXImage Image=Prev_32x32.png}"
+						CategoryName="Page"/>
+					<dxb:BarButtonItem Content="Next"
+						Command="{Binding NextPageCommand}"
+						Glyph="{dx:DXImage Image=Next_16x16.png}"
+						LargeGlyph="{dx:DXImage Image=Next_32x32.png}"
+						CategoryName="Page"/>
+					<dxb:BarButtonItem Content="Last"
+						Command="{Binding LastPageCommand}"
+						Glyph="{dx:DXImage Image=Last_16x16.png}"
+						LargeGlyph="{dx:DXImage Image=Last_32x32.png}"
+						CategoryName="Page"/>
+					<dxb:BarItemSeparator/>
+				</dxb:ToolBarControl>
+			</dxb:BarContainerControl>
+
+			<Grid Grid.Row="1" Style="{StaticResource ContainerGrid}">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="auto"/>
+					<RowDefinition Height="*"/>                    
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="auto"/>
+					<ColumnDefinition Width="auto"/>
+					<ColumnDefinition Width="32"/>
+					<ColumnDefinition Width="auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource LabelControl}" Text="No:"/>
+				<TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource LabelControl}" Text="Text:"/>
+				<TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource LabelControl}" Text="Category:"/>
+				<TextBlock Grid.Column="0" Grid.Row="3" Style="{StaticResource LabelControl}" Text="Type:"/>
+				<TextBlock Grid.Column="0" Grid.Row="4" Style="{StaticResource LabelControl}" Text="Frequency:"/>
+				
+				<TextBlock Grid.Column="1" Grid.Row="6" Text="Custom Fields" HorizontalAlignment="Center" FontWeight="Bold"/>
+				<TextBlock Grid.Column="0" Grid.Row="7" Style="{StaticResource LabelControl}" Text="Label:"/>
+				<TextBlock Grid.Column="0" Grid.Row="8" Style="{StaticResource LabelControl}" Text="Value:"/>
+				<TextBlock Grid.Column="0" Grid.Row="9" Style="{StaticResource LabelControl}" Text="Label:"/>
+				<TextBlock Grid.Column="0" Grid.Row="10" Style="{StaticResource LabelControl}" Text="Value:"/>
+				<TextBlock Grid.Column="0" Grid.Row="11" Style="{StaticResource LabelControl}" Text="Label:"/>
+				<TextBlock Grid.Column="0" Grid.Row="12" Style="{StaticResource LabelControl}" Text="Value:"/>
+
+				<dxe:ButtonEdit Grid.Column="1" Grid.Row="0" x:Name="QuestionNoButtonEdit" 
+							HorizontalAlignment="Left"
+							EditValue="{Binding Path=QuestionNo, UpdateSourceTrigger=PropertyChanged}" 
+							AllowDefaultButton="False"
+							FocusManager.IsFocusScope="True"
+							TabIndex="0"
+							Margin="3" 
+							Width="150" 
+							MaxLength="10"
+							infPrism:ButtonEditValueChanged.Command="{x:Static inf:Commands.UpdateTitleCommand}"  
+							infPrism:ButtonEditValueChanged.IsDirty="{Binding IsDirty,IsAsync=True}" AllowNullInput="True" Grid.ColumnSpan="2">
+					<dxe:ButtonInfo IsDefaultButton="True" GlyphKind="Search" ToolTip="Search Order" Command="{Binding SearchCommand}" Focusable="True"/>
+					<dxe:ButtonEdit.InputBindings>
+						<KeyBinding Key="Return" Command="{Binding OpenCommand}" />
+						<KeyBinding Key="OemQuestion" Command="{Binding SearchCommand}" Modifiers="Shift"/>
+					</dxe:ButtonEdit.InputBindings>
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:FocusBehavior/>
+                    </dxmvvm:Interaction.Behaviors>
+				</dxe:ButtonEdit>
+				<dxe:TextEdit Grid.Column="1" Grid.Row="1" 
+							  Width="300"
+							  Height="80"
+							  Text="{Binding Path=Question.QuestionText, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}" Style="{StaticResource TextEditNotes}"/>
+				<dxg:LookUpEdit Grid.Column="1" Grid.Row="2"
+								AutoPopulateColumns="False"
+								ImmediatePopup="True"
+								ItemsSource="{Binding Path=Categories}"
+								ValueMember="Id"
+								EditValue="{Binding Question.QuestionCategoryId, UpdateSourceTrigger=PropertyChanged}"
+								PopupWidth="450"
+								PopupHeight="250"
+								Width="300"
+								Margin="3" HorizontalAlignment="Left"
+								AutoComplete="True"
+								IsEnabled="{Binding Payloaded}">
+					<dxg:LookUpEdit.PopupContentTemplate>
+						<ControlTemplate>
+							<dxg:GridControl x:Name="PART_GridControl">
+								<dxg:GridControl.View>
+									<dxg:TableView NavigationStyle="Row" AllowEditing="False">
+									</dxg:TableView>
+								</dxg:GridControl.View>
+								<dxg:GridControl.Columns>
+									<dxg:GridColumn FieldName="Code" Width="90" AllowResizing="False"/>
+									<dxg:GridColumn FieldName="Name" Width="250" />
+								</dxg:GridControl.Columns>
+							</dxg:GridControl>
+						</ControlTemplate>
+					</dxg:LookUpEdit.PopupContentTemplate>
+					<dxg:LookUpEdit.StyleSettings>
+						<dxg:SearchLookUpEditStyleSettings />
+					</dxg:LookUpEdit.StyleSettings>
+				</dxg:LookUpEdit>
+				<dxg:LookUpEdit Grid.Column="1" Grid.Row="3"
+								AutoPopulateColumns="False"
+								ImmediatePopup="True"
+								ItemsSource="{Binding Path=Types}"
+								ValueMember="Id"
+								EditValue="{Binding Question.QuestionTypeId, UpdateSourceTrigger=PropertyChanged}"
+								PopupWidth="450"
+								PopupHeight="250"
+								Width="200"
+								Margin="3" HorizontalAlignment="Left"
+								AutoComplete="True"
+								IsEnabled="{Binding Payloaded}">
+					<dxg:LookUpEdit.PopupContentTemplate>
+						<ControlTemplate>
+							<dxg:GridControl x:Name="PART_GridControl">
+								<dxg:GridControl.View>
+									<dxg:TableView NavigationStyle="Row" AllowEditing="False">
+									</dxg:TableView>
+								</dxg:GridControl.View>
+								<dxg:GridControl.Columns>
+									<dxg:GridColumn FieldName="Code" Width="80" />
+									<dxg:GridColumn FieldName="Name" Width="250" />
+								</dxg:GridControl.Columns>
+							</dxg:GridControl>
+						</ControlTemplate>
+					</dxg:LookUpEdit.PopupContentTemplate>
+					<dxg:LookUpEdit.StyleSettings>
+						<dxg:SearchLookUpEditStyleSettings />
+					</dxg:LookUpEdit.StyleSettings>
+				</dxg:LookUpEdit>
+                <!--<ComboBox Grid.Column="1" Grid.Row="4"
+                          ItemsSource="{Binding Source={presentation:EnumBindingSource {x:Type domain:Frequency}}}"
+                          SelectedValue="{Binding Question.Frequency, UpdateSourceTrigger=PropertyChanged}"  
+                          />-->
+                <dxe:ComboBoxEdit Grid.Column="1" Grid.Row="4"
+								  ImmediatePopup="True"
+								  ItemsSource="{Binding Source={presentation:EnumBindingSource {x:Type domain:Frequency}}}"
+								  SelectedItem="{Binding Question.Frequency, UpdateSourceTrigger=PropertyChanged}"
+								  Width="200"
+								  Margin="3" 
+								  HorizontalAlignment="Left"
+								  AutoComplete="True"
+								  IsTextEditable="False"
+								  IsEnabled="{Binding Payloaded}"
+					/>
+				
+				<StackPanel Grid.Column="1" Grid.Row="5"  Orientation="Horizontal" Margin="3">
+					<WrapPanel Orientation="Horizontal" Margin="3">
+						<CheckBox IsChecked="{Binding Question.Notification, UpdateSourceTrigger=PropertyChanged}" Margin="3" Width="80" Content="Notification" HorizontalAlignment="Left" />
+						<CheckBox IsChecked="{Binding Question.Compliance, UpdateSourceTrigger=PropertyChanged}" Margin="3" Width="80" Content="Compliance" HorizontalAlignment="Left" />
+                        <CheckBox IsChecked="{Binding Question.IsActive, UpdateSourceTrigger=PropertyChanged}" Margin="3" Width="80" Content="Active" HorizontalAlignment="Left" />
+					</WrapPanel>
+				</StackPanel>
+
+				<dxe:TextEdit Grid.Column="1" Grid.Row="7" 
+							  Text="{Binding Path=Question.CustomColumnLabel1, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}"/>
+				<dxe:TextEdit Grid.Column="1" Grid.Row="8" 
+							  Text="{Binding Path=Question.CustomColumnValue1, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}"/>
+
+				<dxe:TextEdit Grid.Column="1" Grid.Row="9" 
+							  Text="{Binding Path=Question.CustomColumnLabel2, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}"/>
+				<dxe:TextEdit Grid.Column="1" Grid.Row="10" 
+							  Text="{Binding Path=Question.CustomColumnValue2, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}"/>
+
+				<dxe:TextEdit Grid.Column="1" Grid.Row="11" 
+							  Text="{Binding Path=Question.CustomColumnLabel3, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}"/>
+				<dxe:TextEdit Grid.Column="1" Grid.Row="12" 
+							  Text="{Binding Path=Question.CustomColumnValue3, UpdateSourceTrigger=PropertyChanged}" 
+							  Margin="3"
+							  HorizontalAlignment="Stretch" 
+							  IsEnabled="{Binding Payloaded}"/>
+
+				<dx:GroupFrame Grid.Column="3" Grid.Row="0" Grid.RowSpan="7"
+							   Header="Settings:" Width="250" 
+							   HorizontalAlignment="Left">
+					<dxe:ListBoxEdit x:Name="listBox1" Margin="0,5" 
+									 ShowCustomItems="False"                                                 
+									 VerticalAlignment="Stretch"
+									 HorizontalAlignment="Stretch"
+									 EditValue="{Binding Path=Question.Flags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,Converter={StaticResource FlagEnumConverter }}"                                     
+									 SelectionMode="Multiple"
+									 IsEnabled="{Binding Payloaded}"
+									 ItemsSource="{Binding Source={presentation:EnumBindingSource {x:Type domain:QuestionSettings}}}"
+									 ShowBorder="False" 
+									 Background="Transparent">
+						<dxe:ListBoxEdit.StyleSettings>
+							<dxe:CheckedListBoxEditStyleSettings />
+						</dxe:ListBoxEdit.StyleSettings>
+					</dxe:ListBoxEdit>
+				</dx:GroupFrame>
+
+			</Grid>
+		</Grid>
+	</dx:LoadingDecorator>
+</inf:ViewBase>
